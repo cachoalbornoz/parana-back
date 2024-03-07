@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "58e85dc4b204ead758460950c652c0d8",
+    "content-hash": "d3f9a5025881adf376e9a3ea79ec7013",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -1583,6 +1583,56 @@
             ],
             "abandoned": "react/http",
             "time": "2021-04-07T16:49:17+00:00"
+        },
+        {
+            "name": "react/mysql",
+            "version": "v0.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/friends-of-reactphp/mysql.git",
+                "reference": "914ff50ebc15934a3847a90f032cccaac215146f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/friends-of-reactphp/mysql/zipball/914ff50ebc15934a3847a90f032cccaac215146f",
+                "reference": "914ff50ebc15934a3847a90f032cccaac215146f",
+                "shasum": ""
+            },
+            "require": {
+                "evenement/evenement": "^3.0 || ^2.1 || ^1.1",
+                "php": ">=5.4.0",
+                "react/event-loop": "^1.2",
+                "react/promise": "^3 || ^2.7",
+                "react/promise-stream": "^1.6",
+                "react/promise-timer": "^1.9",
+                "react/socket": "^1.12"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6 || ^5.7 || ^4.8.36",
+                "react/async": "^4 || ^3 || ^2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "React\\MySQL\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Async MySQL database client for ReactPHP.",
+            "keywords": [
+                "async",
+                "database",
+                "mysql",
+                "reactphp"
+            ],
+            "support": {
+                "issues": "https://github.com/friends-of-reactphp/mysql/issues",
+                "source": "https://github.com/friends-of-reactphp/mysql/tree/v0.6.0"
+            },
+            "time": "2023-11-10T12:08:50+00:00"
         },
         {
             "name": "react/promise",
