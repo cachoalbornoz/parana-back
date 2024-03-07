@@ -1,0 +1,20 @@
+{
+    "name": "parana-medio/parana-back",
+    "description": "Servidor de lecturas",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Cacho\\ParanaBack\\": "src/"
+        }
+    },
+    "require": {
+        "react/react": "1.4",
+        "clue/buzz-react": "^2.9",
+        "clue/mq-react": "^1.6",
+        "clue/ndjson-react": "^1.3",
+        "clue/reactphp-flux": "^1.4",
+        "guzzlehttp/guzzle": "^7.8",
+        "nesbot/carbon": "^3.0"
+    }
+}
