@@ -135,6 +135,16 @@ function getPlacas()
 
 }
 
+function cortarLoop(){
+	
+    $conn = conectar();
+    $query = 'SELECT f_loop FROM `tbl_setting`;';
+    $data   = mysqli_query($conn, $query);
+    $row = mysqli_fetch_array($data);  
+    desconectar($conn);
+    return  ($row['f_loop'] == 1) ? true : false;
+}
+
 function testEscritura()
 {
     $conn  = conectar();
@@ -142,3 +152,5 @@ function testEscritura()
     mysqli_query($conn, $query);
     desconectar($conn);
 }
+
+

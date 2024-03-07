@@ -7,6 +7,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Clue\React\Mq\Queue;
 use Psr\Http\Message\ResponseInterface;
 use React\Http\Browser;
+use React\Promise\Timer;
 
 use React\MySQL\QueryResult;
 
@@ -28,9 +29,14 @@ $client = new Browser($loop);
 
 // load a huge array of URLs to fetch
 
+
 $placas = getPlacas();
 
-$loop->addPeriodicTimer(5, function () use ($client, $placas) {
+$loop->addPeriodicTimer(5, function (\React\EventLoop\TimerInterface $timer) use ($client, $placas, &$loop) {
+
+    if(cortarLoop() == 1) {
+        $loop->cancelTimer($timer);
+    }
 
     $q = new Queue(50, null, function ($url) use ($client) {
         $url = "http://scada:3L3ctrota5@$url/status.xml";
@@ -42,6 +48,7 @@ $loop->addPeriodicTimer(5, function () use ($client, $placas) {
         $id  = $placa['f_idplaca'];
         $url = $placa['f_ip'];
 
+        Timer\timeout(
         $q($url)->then(
             function (ResponseInterface $response) use ($id, $url) {
                 // Procesar respuesta
@@ -51,9 +58,9 @@ $loop->addPeriodicTimer(5, function () use ($client, $placas) {
             function (Exception $exception) use ($url) {
                 print $url . ' : ' . $exception->getMessage() . " \n";
             }
-        );
-    }
+        ), 5.0);
 
+    }
 });
 
 $loop->run();
