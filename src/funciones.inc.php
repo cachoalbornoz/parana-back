@@ -1,5 +1,9 @@
 <?php
+
 require_once 'config.inc.php';
+require __DIR__ . '/../vendor/autoload.php';
+
+use React\MySQL\QueryResult;
 
 function conectar()
 {
@@ -18,7 +22,7 @@ function desconectar($cnx)
     @mysqli_close($cnx);
 }
 
-function guardaXML($f_idplaca, $xml)
+function armarXML($f_idplaca, $xml)
 {
     $conn = conectar();
 
@@ -36,8 +40,6 @@ function guardaXML($f_idplaca, $xml)
     $query_check = mysqli_query($conn, "SELECT f_idplaca FROM tbl_datalogger_electrotas WHERE f_idplaca = $f_idplaca");
 
     if(mysqli_num_rows($query_check) == 0) {
-
-        // Query insercion
         $query = "INSERT INTO tbl_datalogger_electrotas(
 			f_idplaca,
 			f_fecha,
@@ -85,7 +87,6 @@ function guardaXML($f_idplaca, $xml)
 		)";
 
     } else {
-        // Query actualización
         $query = "UPDATE tbl_datalogger_electrotas SET 
 			f_fecha = NOW(),
 			f_ED1 = $btn0_value,
@@ -110,9 +111,36 @@ function guardaXML($f_idplaca, $xml)
 			WHERE f_idplaca = $f_idplaca";
     }
 
+    return $query;
+}
+
+function guardaXML($f_idplaca, $xml)
+{
+    $conn = conectar();
+
+    $query = armarXML($f_idplaca, $xml);
     mysqli_query($conn, $query) or die($query);
+    print "Xml PlacaId: $f_idplaca  \n";
 
     desconectar($conn);
+}
+
+function guardarXmlAsync($f_idplaca, $xml)
+{
+    $factory = new React\MySQL\Factory();
+    //$connection = $factory->createLazyConnection('user:password@server/database');
+    $connection = $factory->createLazyConnection('root@localhost/parana-medio');
+
+    $query = armarXML($f_idplaca, $xml);
+
+    $connection->query($query)->then(
+        function (QueryResult $command) use ($f_idplaca) {
+            print "AsyncXml PlacaId: $f_idplaca  \n";
+        },
+        function (Exception $error) {
+            print 'Error: ' . $error->getMessage() . PHP_EOL;
+        }
+    );
 }
 
 function getPlacas()
@@ -135,12 +163,13 @@ function getPlacas()
 
 }
 
-function cortarLoop(){
-	
-    $conn = conectar();
+function cortarLoop()
+{
+
+    $conn  = conectar();
     $query = 'SELECT f_loop FROM `tbl_setting`;';
-    $data   = mysqli_query($conn, $query);
-    $row = mysqli_fetch_array($data);  
+    $data  = mysqli_query($conn, $query);
+    $row   = mysqli_fetch_array($data);
     desconectar($conn);
     return  ($row['f_loop'] == 1) ? true : false;
 }
@@ -152,5 +181,3 @@ function testEscritura()
     mysqli_query($conn, $query);
     desconectar($conn);
 }
-
-

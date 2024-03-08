@@ -9,26 +9,8 @@ use Psr\Http\Message\ResponseInterface;
 use React\Http\Browser;
 use React\Promise\Timer;
 
-use React\MySQL\QueryResult;
-
 $loop   = React\EventLoop\Loop::get();
 $client = new Browser($loop);
-
-// $factory = new React\MySQL\Factory();
-// //$connection = $factory->createLazyConnection('user:password@server/database');
-// $connection = $factory->createLazyConnection('root@localhost/parana-medio');
-
-// $connection->query('SELECT f_ip FROM tbl_placas')->then(
-//     function (QueryResult $command) {
-
-//     },
-//     function (Exception $error) {
-//         print 'Error: ' . $error->getMessage() . PHP_EOL;
-//     }
-// );
-
-// load a huge array of URLs to fetch
-
 
 $placas = getPlacas();
 
@@ -53,7 +35,7 @@ $loop->addPeriodicTimer(5, function (\React\EventLoop\TimerInterface $timer) use
             function (ResponseInterface $response) use ($id, $url) {
                 // Procesar respuesta
                 $xml = new SimpleXMLElement($response->getBody());
-                print 'id: ' . $id . ' url: ' . $url . ' : ' . $xml->pot2 . " \n";
+                guardarXmlAsync($id, $xml);
             },
             function (Exception $exception) use ($url) {
                 print $url . ' : ' . $exception->getMessage() . " \n";
