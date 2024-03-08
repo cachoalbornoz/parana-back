@@ -17,6 +17,17 @@ function conectar()
     return $cnx;
 }
 
+function conectarAsync()
+{
+    //
+    // Modelo de conexion
+    // $connection = $factory->createLazyConnection('user:password@server/database');
+    //
+    $factory         = new React\MySQL\Factory();
+    $MySQLConnection = USERNAME . '@' . SERVER_IP . '/' . MYSQL_DATABASE;
+    return $factory->createLazyConnection($MySQLConnection);
+}
+
 function desconectar($cnx)
 {
     @mysqli_close($cnx);
@@ -127,12 +138,8 @@ function guardaXML($f_idplaca, $xml)
 
 function guardarXmlAsync($f_idplaca, $xml)
 {
-    $factory = new React\MySQL\Factory();
-    //$connection = $factory->createLazyConnection('user:password@server/database');
-    $connection = $factory->createLazyConnection('root@localhost/parana-medio');
-
-    $query = armarXML($f_idplaca, $xml);
-
+    $connection = conectarAsync();
+    $query      = armarXML($f_idplaca, $xml);
     $connection->query($query)->then(
         function (QueryResult $command) use ($f_idplaca) {
             print "AsyncXml PlacaId: $f_idplaca  \n";
@@ -167,17 +174,10 @@ function cortarLoop()
 {
 
     $conn  = conectar();
-    $query = 'SELECT f_loop FROM `tbl_setting`;';
+    $query = 'SELECT f_detenerlecturas FROM `tbl_setting`;';
     $data  = mysqli_query($conn, $query);
     $row   = mysqli_fetch_array($data);
     desconectar($conn);
-    return  ($row['f_loop'] == 1) ? true : false;
+    return  ($row['f_detenerlecturas'] == 1) ? true : false;
 }
 
-function testEscritura()
-{
-    $conn  = conectar();
-    $query = 'UPDATE users SET last_login = NOW() ;';
-    mysqli_query($conn, $query);
-    desconectar($conn);
-}

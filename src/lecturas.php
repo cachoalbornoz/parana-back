@@ -16,7 +16,7 @@ $placas = getPlacas();
 
 $loop->addPeriodicTimer(5, function (\React\EventLoop\TimerInterface $timer) use ($client, $placas, &$loop) {
 
-    if(cortarLoop() == 1) {
+    if(cortarLoop()) {
         $loop->cancelTimer($timer);
     }
 
@@ -31,16 +31,18 @@ $loop->addPeriodicTimer(5, function (\React\EventLoop\TimerInterface $timer) use
         $url = $placa['f_ip'];
 
         Timer\timeout(
-        $q($url)->then(
-            function (ResponseInterface $response) use ($id, $url) {
-                // Procesar respuesta
-                $xml = new SimpleXMLElement($response->getBody());
-                guardarXmlAsync($id, $xml);
-            },
-            function (Exception $exception) use ($url) {
-                print $url . ' : ' . $exception->getMessage() . " \n";
-            }
-        ), 5.0);
+            $q($url)->then(
+                function (ResponseInterface $response) use ($id, $url) {
+                    // Procesar respuesta
+                    $xml = new SimpleXMLElement($response->getBody());
+                    guardarXmlAsync($id, $xml);
+                },
+                function (Exception $exception) use ($url) {
+                    print $url . ' : ' . $exception->getMessage() . " \n";
+                }
+            ),
+            5.0
+        );
 
     }
 });
