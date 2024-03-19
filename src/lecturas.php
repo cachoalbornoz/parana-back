@@ -4,7 +4,7 @@ set_time_limit(0);
 ini_set('max_execution_time', 0);
 
 require 'funciones.inc.php';
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use Clue\React\Mq\Queue;
 use Psr\Http\Message\ResponseInterface;

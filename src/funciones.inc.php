@@ -1,7 +1,7 @@
 <?php
 
 require 'config.inc.php';
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use React\MySQL\QueryResult;
 
