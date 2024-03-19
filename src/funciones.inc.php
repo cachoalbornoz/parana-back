@@ -1,7 +1,7 @@
 <?php
 
-require_once 'config.inc.php';
-require __DIR__ . '/../vendor/autoload.php';
+require 'config.inc.php';
+require __DIR__ . '/../../vendor/autoload.php';
 
 use React\MySQL\QueryResult;
 
@@ -17,6 +17,11 @@ function conectar()
     return $cnx;
 }
 
+function desconectar($cnx)
+{
+    @mysqli_close($cnx);
+}
+
 function conectarAsync()
 {
     //
@@ -28,9 +33,8 @@ function conectarAsync()
     return $factory->createLazyConnection($MySQLConnection);
 }
 
-function desconectar($cnx)
-{
-    @mysqli_close($cnx);
+function habilitarLecturas(){
+    mysqli_query(conectar(), 'UPDATE tbl_setting SET f_detenerlecturas=0, f_placasaleer = 0, f_reintentos = 0, f_iteracciones = 0 WHERE f_idsetting = 1');
 }
 
 function armarXML($f_idplaca, $xml)
@@ -72,8 +76,8 @@ function armarXML($f_idplaca, $xml)
 			f_SR5,
 			f_SR6,
 			f_SR7,
-			f_SR8) 
-		VALUES ( 
+			f_SR8)
+		VALUES (
 			$f_idplaca,
 			NOW(),
 			$btn0_value,
@@ -98,7 +102,7 @@ function armarXML($f_idplaca, $xml)
 		)";
 
     } else {
-        $query = "UPDATE tbl_datalogger_electrotas SET 
+        $query = "UPDATE tbl_datalogger_electrotas SET
 			f_fecha = NOW(),
 			f_ED1 = $btn0_value,
 			f_ED2 = $btn1_value,
@@ -155,7 +159,7 @@ function getPlacas()
     $conn = conectar();
 
     // SQL QUERY
-    $query = 'SELECT f_idplaca, f_ip FROM `tbl_placas`;';
+    $query = 'SELECT f_idplaca, f_ip FROM `tbl_placas` WHERE f_habilitada = 1;';
 
     // FETCHING DATA FROM DATABASE
     $result = [];
@@ -163,21 +167,50 @@ function getPlacas()
     while ($row = mysqli_fetch_array($data)) {
         $result[] = $row;
     }
-
-    desconectar($conn);
-
     return  (count($result) > 0) ? $result : null;
+}
+
+function limpiarDesconexion()
+{
+    mysqli_query(conectar(), 'UPDATE tbl_setting SET f_placasaleer = 0, f_reintentos = 0, f_iteracciones = 0 WHERE f_idsetting = 1');
+}
+
+function limpiarReintentos()
+{
+    mysqli_query(conectar(), 'UPDATE tbl_setting SET f_reintentos = 0, f_iteracciones = 0 WHERE f_idsetting = 1');
+}
+
+function chequearIteraciones()
+{
+    $conn = conectar();
+    $query = mysqli_query($conn, 'SELECT f_iteracciones FROM tbl_setting WHERE f_idsetting = 1');
+    $row   = mysqli_fetch_array($query);
+    return ($row['f_iteracciones'] > 1) ? true : false;
+}
+
+function informarPlacas($cantidad)
+{
+    mysqli_query(conectar(), "UPDATE tbl_setting SET f_placasaleer = $cantidad WHERE f_idsetting = 1");
+}
+
+function informarDesconexion()
+{
+    $conn = conectar();
+    mysqli_query($conn, 'UPDATE tbl_setting SET f_reintentos = f_reintentos + 1 WHERE f_idsetting = 1');
+
+    $query = mysqli_query($conn, 'SELECT * FROM tbl_setting WHERE f_idsetting = 1');
+    $row   = mysqli_fetch_array($query);
+    if ($row['f_reintentos'] == $row['f_placasaleer']) {
+        mysqli_query($conn, 'UPDATE tbl_setting SET f_reintentos = 0, f_iteracciones = 1 WHERE f_idsetting = 1');
+    }
 
 }
 
 function cortarLoop()
 {
-
     $conn  = conectar();
     $query = 'SELECT f_detenerlecturas FROM `tbl_setting`;';
     $data  = mysqli_query($conn, $query);
     $row   = mysqli_fetch_array($data);
-    desconectar($conn);
     return  ($row['f_detenerlecturas'] == 1) ? true : false;
 }
-
